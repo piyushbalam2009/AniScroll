@@ -1,1 +1,6 @@
-export type AudioType="sub"|"dub";export type PlaybackType="hls"|"mp4"|"embed";export interface Anime{id:string;provider:"anilist"|"mal"|"licensed";title:string;englishTitle?:string;posterUrl?:string;description?:string;genres?:string[];year?:number}export interface Episode{id:string;animeId:string;number:number;title?:string;audioOptions:AudioType[]}export interface StreamSource{id:string;provider:string;serverName:string;audio:AudioType;playbackType:PlaybackType;playbackUrl:string;quality?:string;subtitles?:{language:string;url:string}[]}
+export type AudioType = "sub" | "dub";
+export type PlaybackType = "hls" | "mp4" | "embed";
+export type AnimeProvider = "anilist" | "mal" | "licensed" | "reanime" | "hianime" | "animepahe";
+export interface Anime { id: string; provider: AnimeProvider; title: string; englishTitle?: string; posterUrl?: string; description?: string; genres?: string[]; year?: number }
+export interface Episode { id: string; animeId: string; number: number; title?: string; audioOptions: AudioType[] }
+export interface StreamSource { id: string; provider: string; serverName: string; audio: AudioType; playbackType: PlaybackType; playbackUrl: string; quality?: string; subtitles?: { language: string; url: string }[] }
