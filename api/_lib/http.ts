@@ -1,0 +1,1 @@
+import type{VercelRequest,VercelResponse}from"@vercel/node";export function json(res:VercelResponse,status:number,data:unknown){res.setHeader("Cache-Control","public, max-age=30, stale-while-revalidate=120");return res.status(status).json(data)}export function param(req:VercelRequest,key:string){const v=req.query[key];return Array.isArray(v)?String(v[0]||""):String(v||"")}
