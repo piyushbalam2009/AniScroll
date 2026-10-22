@@ -32,18 +32,18 @@ export function parseSearch(config: HtmlProviderConfig, html: string, base: URL,
     const link = card.find("a[href]").toArray().map(a => absolute($(a).attr("href"), base)).find(u => u && u.hostname === base.hostname);
     if (!link) continue;
     const title = cleanText(card.find("[title]").first().attr("title") || card.find(".film-name,.dynamic-name,.name,.title,h3,h4").first().text() || card.find("a").first().text());
-    if (!title || title.length > 180 || seen.has(link.pathname)) continue;
-    seen.add(link.pathname);
+    if (!title || title.length > 180 || seen.has(link.pathname + link.search)) continue;
+    seen.add(link.pathname + link.search);
     const image = absolute(card.find("img").first().attr("data-src") || card.find("img").first().attr("data-lazy-src") || card.find("img").first().attr("src"), base);
-    results.push({ id: config.id + ":" + encodeURIComponent(link.pathname), provider: config.id, title, englishTitle: title, posterUrl: image?.href, description: cleanText(card.find(".description,.film-description,p").first().text()) || undefined });
+    results.push({ id: config.id + ":" + encodeURIComponent(link.pathname + link.search), provider: config.id, title, englishTitle: title, posterUrl: image?.href, description: cleanText(card.find(".description,.film-description,p").first().text()) || undefined });
     if (results.length >= 20) break;
   }
   if (!results.length) $("a[href]").each((_i, el) => {
     if (results.length >= 20) return;
     const link = absolute($(el).attr("href"), base), title = cleanText($(el).attr("title") || $(el).text());
-    if (!link || link.hostname !== base.hostname || !title || title.length > 180 || !title.toLowerCase().includes(query.toLowerCase()) || seen.has(link.pathname)) return;
-    seen.add(link.pathname);
-    results.push({ id: config.id + ":" + encodeURIComponent(link.pathname), provider: config.id, title, englishTitle: title });
+    if (!link || link.hostname !== base.hostname || !title || title.length > 180 || !title.toLowerCase().includes(query.toLowerCase()) || seen.has(link.pathname + link.search)) return;
+    seen.add(link.pathname + link.search);
+    results.push({ id: config.id + ":" + encodeURIComponent(link.pathname + link.search), provider: config.id, title, englishTitle: title });
   });
   return results;
 }
@@ -52,14 +52,14 @@ export function parseEpisodes(config: HtmlProviderConfig, html: string, base: UR
   const selectors = ".ss-list a[href],.episode-list a[href],.episodes a[href],.eps-item a[href],.ep-item a[href],.detail-infor-content a[href],a[href*='/watch/'],a[href*='-episode-'],a[href*='episode']";
   $(selectors).each((_i, el) => {
     const link = absolute($(el).attr("href"), base);
-    if (!link || link.hostname !== base.hostname || link.pathname === base.pathname) return;
+    if (!link || link.hostname !== base.hostname || link.pathname === base.pathname && link.search === base.search) return;
     const label = cleanText($(el).attr("title") || $(el).text() || $(el).attr("aria-label"));
     const match = (label + " " + link.pathname).match(/(?:episode|ep)[\\s._-]*(\\d+(?:\\.\\d+)?)/i) || label.match(/^\\s*(\\d+(?:\\.\\d+)?)\\s*$/);
-    if (!match || seen.has(link.pathname)) return;
+    if (!match || seen.has(link.pathname + link.search)) return;
     const number = Number(match[1]);
     if (!Number.isFinite(number) || number < 0 || number > 10000) return;
-    seen.add(link.pathname);
-    episodes.push({ id: config.id + ":" + encodeURIComponent(link.pathname), animeId, number, title: label || "Episode " + number, audioOptions: ["sub", "dub"] });
+    seen.add(link.pathname + link.search);
+    episodes.push({ id: config.id + ":" + encodeURIComponent(link.pathname + link.search), animeId, number, title: label || "Episode " + number, audioOptions: ["sub", "dub"] });
   });
   return episodes.sort((a,b) => a.number-b.number).slice(0,500);
 }
