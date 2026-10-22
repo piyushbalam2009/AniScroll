@@ -18,7 +18,7 @@ export async function fetchPage(url: URL): Promise<{ html: string; finalUrl: URL
   if (html.length > 4_000_000) throw new Error("Provider page exceeded the 4 MB parsing limit");
   return { html, finalUrl };
 }
-const cleanText = (value: string | undefined) => (value || "").replace(/\\s+/g, " ").trim();
+const cleanText = (value: string | undefined) => (value || "").replace(/\s+/g, " ").trim();
 function absolute(value: string | undefined, base: URL): URL | undefined {
   if (!value) return undefined;
   try { const url = new URL(value, base); return url.protocol === "https:" && !url.username && !url.password ? url : undefined; }
@@ -54,7 +54,7 @@ export function parseEpisodes(config: HtmlProviderConfig, html: string, base: UR
     const link = absolute($(el).attr("href"), base);
     if (!link || link.hostname !== base.hostname || link.pathname === base.pathname && link.search === base.search) return;
     const label = cleanText($(el).attr("title") || $(el).text() || $(el).attr("aria-label"));
-    const match = (label + " " + link.pathname).match(/(?:episode|ep)[\\s._-]*(\\d+(?:\\.\\d+)?)/i) || label.match(/^\\s*(\\d+(?:\\.\\d+)?)\\s*$/);
+    const match = (label + " " + link.pathname).match(/(?:episode|ep)[\s._-]*(\d+(?:\.\d+)?)/i) || label.match(/^\s*(\d+(?:\.\d+)?)\s*$/);
     if (!match || seen.has(link.pathname + link.search)) return;
     const number = Number(match[1]);
     if (!Number.isFinite(number) || number < 0 || number > 10000) return;
@@ -75,7 +75,7 @@ export function parseSources(config: HtmlProviderConfig, html: string, base: URL
   };
   $("video[src],video source[src],source[src]").each((_i, el) => add($(el).attr("src"), $(el).attr("label") || $(el).attr("title") || "Direct video"));
   $("iframe[src]").each((_i, el) => add($(el).attr("src"), $(el).attr("title") || $(el).attr("data-server") || "Embedded player", "embed"));
-  $("a[href]").each((_i, el) => { const href = $(el).attr("href"); if (href && /\\.(m3u8|mp4)(?:$|\\?)/i.test(href)) add(href, $(el).text() || "Direct video"); });
+  $("a[href]").each((_i, el) => { const href = $(el).attr("href"); if (href && /\.(m3u8|mp4)(?:$|\?)/i.test(href)) add(href, $(el).text() || "Direct video"); });
   // Intentionally do not execute scripts, decode obfuscated payloads, or call undocumented endpoints.
   return sources.filter(s => s.playbackUrl.startsWith("https://")).slice(0,20);
 }
