@@ -1,0 +1,1 @@
+import type{Anime,Episode,StreamSource,AudioType}from"../../../src/types";export interface ProviderAdapter{id:string;search(q:string):Promise<Anime[]>;getEpisodes(animeId:string):Promise<Episode[]>;getSources(episodeId:string,audio:AudioType):Promise<StreamSource[]>}
