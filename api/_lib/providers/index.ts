@@ -1,0 +1,1 @@
+import{LicensedCatalogProvider}from"./licensed";export const providers=[new LicensedCatalogProvider()];
