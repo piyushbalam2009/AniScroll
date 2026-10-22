@@ -1,1 +1,3 @@
-import{LicensedCatalogProvider}from"./licensed";export const providers=[new LicensedCatalogProvider()];
+import { LicensedCatalogProvider } from "./licensed";
+import { scrapedProviders } from "./scraped";
+export const providers = [new LicensedCatalogProvider(), ...scrapedProviders];
